@@ -1,0 +1,162 @@
+{
+  "default": {
+    "mean_reward": 1.7029166787862777,
+    "std_reward": 14.901327523857343,
+    "config": {
+      "name": "default",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "high_lr": {
+    "mean_reward": 10.36073253750801,
+    "std_reward": 17.578678005227314,
+    "config": {
+      "name": "high_lr",
+      "learning_rate": 0.0005,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "low_lr": {
+    "mean_reward": -2.9485554486513137,
+    "std_reward": 8.583630845809159,
+    "config": {
+      "name": "low_lr",
+      "learning_rate": 1e-05,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "large_batch": {
+    "mean_reward": 13.271706801652908,
+    "std_reward": 19.536863561771305,
+    "config": {
+      "name": "large_batch",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 64,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "small_batch": {
+    "mean_reward": 28.907112332433464,
+    "std_reward": 23.98155691763302,
+    "config": {
+      "name": "small_batch",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 16,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "high_gamma": {
+    "mean_reward": -5.561580953001976,
+    "std_reward": 2.270265909687529,
+    "config": {
+      "name": "high_gamma",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.995,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "low_gamma": {
+    "mean_reward": 2.101250656694174,
+    "std_reward": 10.695396897333634,
+    "config": {
+      "name": "low_gamma",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 1000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.95,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "large_buffer": {
+    "mean_reward": 41.85579931586981,
+    "std_reward": 18.19582005474114,
+    "config": {
+      "name": "large_buffer",
+      "learning_rate": 0.0001,
+      "buffer_size": 100000,
+      "learning_starts": 2000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.1,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.05
+    }
+  },
+  "aggressive_exploration": {
+    "mean_reward": 17.883611066639425,
+    "std_reward": 35.25962393775582,
+    "config": {
+      "name": "aggressive_exploration",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 500,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.3,
+      "exploration_initial_eps": 1.0,
+      "exploration_final_eps": 0.01
+    }
+  },
+  "conservative_exploration": {
+    "mean_reward": 11.750483132898808,
+    "std_reward": 11.790919604676407,
+    "config": {
+      "name": "conservative_exploration",
+      "learning_rate": 0.0001,
+      "buffer_size": 50000,
+      "learning_starts": 2000,
+      "batch_size": 32,
+      "tau": 1.0,
+      "gamma": 0.99,
+      "exploration_fraction": 0.05,
+      "exploration_initial_eps": 0.5,
+      "exploration_final_eps": 0.1
+    }
+  }
+}
