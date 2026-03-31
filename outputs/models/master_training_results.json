@@ -1,0 +1,219 @@
+{
+  "timestamp": "2026-03-30T12:51:09.305071",
+  "total_training_time_seconds": 2339.3493399620056,
+  "total_training_time_hours": 0.6498192611005571,
+  "algorithms": {
+    "dqn": {
+      "status": "success",
+      "results": {
+        "default": {
+          "mean_reward": 1.7029166787862777,
+          "std_reward": 14.901327523857343
+        },
+        "high_lr": {
+          "mean_reward": 10.36073253750801,
+          "std_reward": 17.578678005227314
+        },
+        "low_lr": {
+          "mean_reward": -2.9485554486513137,
+          "std_reward": 8.583630845809159
+        },
+        "large_batch": {
+          "mean_reward": 13.271706801652908,
+          "std_reward": 19.536863561771305
+        },
+        "small_batch": {
+          "mean_reward": 28.907112332433464,
+          "std_reward": 23.98155691763302
+        },
+        "high_gamma": {
+          "mean_reward": -5.561580953001976,
+          "std_reward": 2.270265909687529
+        },
+        "low_gamma": {
+          "mean_reward": 2.101250656694174,
+          "std_reward": 10.695396897333634
+        },
+        "large_buffer": {
+          "mean_reward": 41.85579931586981,
+          "std_reward": 18.19582005474114
+        },
+        "aggressive_exploration": {
+          "mean_reward": 17.883611066639425,
+          "std_reward": 35.25962393775582
+        },
+        "conservative_exploration": {
+          "mean_reward": 11.750483132898808,
+          "std_reward": 11.790919604676407
+        }
+      },
+      "training_time": 637.126124382019
+    },
+    "ppo": {
+      "status": "success",
+      "results": {
+        "default": {
+          "mean_reward": 44.44192447289824,
+          "std_reward": 16.49005966271143
+        },
+        "high_lr": {
+          "mean_reward": 43.99558533877134,
+          "std_reward": 14.312903919847303
+        },
+        "low_lr": {
+          "mean_reward": 52.383814201503995,
+          "std_reward": 19.13834021732101
+        },
+        "large_batch": {
+          "mean_reward": 45.40951316580176,
+          "std_reward": 15.51535972402471
+        },
+        "small_batch": {
+          "mean_reward": 41.84678992629051,
+          "std_reward": 15.22642800267345
+        },
+        "high_entropy": {
+          "mean_reward": 43.17745906636119,
+          "std_reward": 16.92455547014398
+        },
+        "high_clip": {
+          "mean_reward": 46.255192482471465,
+          "std_reward": 16.80872164791837
+        },
+        "low_clip": {
+          "mean_reward": 46.068341293931006,
+          "std_reward": 18.83564117172525
+        },
+        "many_epochs": {
+          "mean_reward": 40.31161254346371,
+          "std_reward": 15.54857667687941
+        },
+        "high_gamma": {
+          "mean_reward": 47.66187879964709,
+          "std_reward": 17.466847358845545
+        }
+      },
+      "training_time": 942.4111421108246
+    },
+    "a2c": {
+      "status": "success",
+      "results": {
+        "default": {
+          "mean_reward": 46.67818788290024,
+          "std_reward": 16.960551972828302
+        },
+        "high_lr": {
+          "mean_reward": 48.489678436517714,
+          "std_reward": 17.19093384459534
+        },
+        "low_lr": {
+          "mean_reward": 44.19264046400785,
+          "std_reward": 15.118538164717132
+        },
+        "more_steps": {
+          "mean_reward": 47.70338171720505,
+          "std_reward": 15.583608423942067
+        },
+        "fewer_steps": {
+          "mean_reward": 41.73494053557515,
+          "std_reward": 16.442287265320438
+        },
+        "high_entropy": {
+          "mean_reward": 50.67623360157013,
+          "std_reward": 16.59641109906785
+        },
+        "low_gae": {
+          "mean_reward": 55.021384136378764,
+          "std_reward": 20.26857965961453
+        },
+        "high_gamma": {
+          "mean_reward": 48.93729140907526,
+          "std_reward": 19.79346463915274
+        },
+        "strict_clip": {
+          "mean_reward": 48.43970215767622,
+          "std_reward": 18.77467468151906
+        },
+        "balanced": {
+          "mean_reward": 47.755398362874985,
+          "std_reward": 17.206898639407246
+        }
+      },
+      "training_time": 662.5298492908478
+    },
+    "reinforce": {
+      "status": "success",
+      "results": {
+        "default": {
+          "mean_reward": 0.0,
+          "std_reward": 0.0
+        },
+        "high_lr": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "low_lr": {
+          "mean_reward": 0.0,
+          "std_reward": 0.0
+        },
+        "large_network": {
+          "mean_reward": 12.459607954545454,
+          "std_reward": 19.09138181981087
+        },
+        "small_network": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "high_gamma": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "low_gamma": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "medium_lr_large": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "aggressive": {
+          "mean_reward": -10.0,
+          "std_reward": 0.0
+        },
+        "conservative": {
+          "mean_reward": 52.156733731546225,
+          "std_reward": 17.916824891843216
+        }
+      },
+      "training_time": 97.27815890312195
+    }
+  },
+  "algorithm_stats": {
+    "dqn": {
+      "mean": 11.932347612082959,
+      "max": 41.85579931586981,
+      "min": -5.561580953001976,
+      "count": 10
+    },
+    "ppo": {
+      "mean": 45.15521112911402,
+      "max": 52.383814201503995,
+      "min": 40.31161254346371,
+      "count": 10
+    },
+    "a2c": {
+      "mean": 47.962883870378135,
+      "max": 55.021384136378764,
+      "min": 41.73494053557515,
+      "count": 10
+    },
+    "reinforce": {
+      "mean": 0.46163416860916795,
+      "max": 52.156733731546225,
+      "min": -10.0,
+      "count": 10
+    }
+  },
+  "best_overall_algorithm": "a2c",
+  "best_overall_reward": 55.021384136378764
+}
