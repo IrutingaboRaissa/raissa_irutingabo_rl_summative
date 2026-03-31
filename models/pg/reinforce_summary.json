@@ -1,0 +1,102 @@
+{
+  "default": {
+    "mean_reward": 0.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "default",
+      "learning_rate": 0.001,
+      "hidden_size": 128,
+      "gamma": 0.99
+    }
+  },
+  "high_lr": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "high_lr",
+      "learning_rate": 0.005,
+      "hidden_size": 128,
+      "gamma": 0.99
+    }
+  },
+  "low_lr": {
+    "mean_reward": 0.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "low_lr",
+      "learning_rate": 0.0001,
+      "hidden_size": 128,
+      "gamma": 0.99
+    }
+  },
+  "large_network": {
+    "mean_reward": 12.459607954545454,
+    "std_reward": 19.09138181981087,
+    "config": {
+      "name": "large_network",
+      "learning_rate": 0.001,
+      "hidden_size": 256,
+      "gamma": 0.99
+    }
+  },
+  "small_network": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "small_network",
+      "learning_rate": 0.001,
+      "hidden_size": 64,
+      "gamma": 0.99
+    }
+  },
+  "high_gamma": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "high_gamma",
+      "learning_rate": 0.001,
+      "hidden_size": 128,
+      "gamma": 0.995
+    }
+  },
+  "low_gamma": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "low_gamma",
+      "learning_rate": 0.001,
+      "hidden_size": 128,
+      "gamma": 0.95
+    }
+  },
+  "medium_lr_large": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "medium_lr_large",
+      "learning_rate": 0.003,
+      "hidden_size": 256,
+      "gamma": 0.99
+    }
+  },
+  "aggressive": {
+    "mean_reward": -10.0,
+    "std_reward": 0.0,
+    "config": {
+      "name": "aggressive",
+      "learning_rate": 0.01,
+      "hidden_size": 128,
+      "gamma": 0.99
+    }
+  },
+  "conservative": {
+    "mean_reward": 52.156733731546225,
+    "std_reward": 17.916824891843216,
+    "config": {
+      "name": "conservative",
+      "learning_rate": 0.0001,
+      "hidden_size": 64,
+      "gamma": 0.99
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "default": {
+    "mean_reward": 44.44192447289824,
+    "std_reward": 16.49005966271143,
+    "config": {
+      "name": "default",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "high_lr": {
+    "mean_reward": 43.99558533877134,
+    "std_reward": 14.312903919847303,
+    "config": {
+      "name": "high_lr",
+      "learning_rate": 0.001,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "low_lr": {
+    "mean_reward": 52.383814201503995,
+    "std_reward": 19.13834021732101,
+    "config": {
+      "name": "low_lr",
+      "learning_rate": 0.0001,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "large_batch": {
+    "mean_reward": 45.40951316580176,
+    "std_reward": 15.51535972402471,
+    "config": {
+      "name": "large_batch",
+      "learning_rate": 0.0003,
+      "n_steps": 4096,
+      "batch_size": 128,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "small_batch": {
+    "mean_reward": 41.84678992629051,
+    "std_reward": 15.22642800267345,
+    "config": {
+      "name": "small_batch",
+      "learning_rate": 0.0003,
+      "n_steps": 1024,
+      "batch_size": 32,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "high_entropy": {
+    "mean_reward": 43.17745906636119,
+    "std_reward": 16.92455547014398,
+    "config": {
+      "name": "high_entropy",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.01
+    }
+  },
+  "high_clip": {
+    "mean_reward": 46.255192482471465,
+    "std_reward": 16.80872164791837,
+    "config": {
+      "name": "high_clip",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.3,
+      "ent_coef": 0.0
+    }
+  },
+  "low_clip": {
+    "mean_reward": 46.068341293931006,
+    "std_reward": 18.83564117172525,
+    "config": {
+      "name": "low_clip",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.1,
+      "ent_coef": 0.0
+    }
+  },
+  "many_epochs": {
+    "mean_reward": 40.31161254346371,
+    "std_reward": 15.54857667687941,
+    "config": {
+      "name": "many_epochs",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 20,
+      "gamma": 0.99,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  },
+  "high_gamma": {
+    "mean_reward": 47.66187879964709,
+    "std_reward": 17.466847358845545,
+    "config": {
+      "name": "high_gamma",
+      "learning_rate": 0.0003,
+      "n_steps": 2048,
+      "batch_size": 64,
+      "n_epochs": 10,
+      "gamma": 0.999,
+      "gae_lambda": 0.95,
+      "clip_range": 0.2,
+      "ent_coef": 0.0
+    }
+  }
+}
