@@ -47,6 +47,5 @@ def main() -> None:
         viz.close()
         env.close()
 
-
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@
 
 A Gymnasium environment and training pipeline for a food-recommendation agent aligned with weight-management goals (loss, gain, maintenance), using four RL algorithms and systematic hyperparameter search.
 
-## Overview
+## Overview 
 
 **Problem.** Learn a policy that chooses among accept / request alternatives / skip actions so daily intake moves toward goal-specific calorie and macro targets, using a fixed African-foods database.
 
@@ -34,11 +34,11 @@ A Gymnasium environment and training pipeline for a food-recommendation agent al
 │   ├── dqn/                    # DQN checkpoints + dqn_summary.json (or training_summary.json)
 │   └── pg/                     # PPO, A2C, REINFORCE checkpoints + *_summary.json
 ├── main.py                     # Playback CLI (best model from summaries)
-├── play.py                     # Thin entry point: calls main.main()
 ├── random_demo.py              # Random policy + headless pygame screenshot demo
+├── unity_export.py             # Export trajectories for Unity replay
 ├── train_all.py                # Sequentially trains DQN, PPO, A2C, REINFORCE
 ├── analyze_results.py          # Plots and TRAINING_REPORT.txt from summaries
-├── verify_project.py           # Sanity checks for key files / syntax
+├── unity_bridge/               # Unity replay script + integration notes
 ├── requirements.txt
 └── README.md
 ```
@@ -79,23 +79,14 @@ Run from the project root **after** `pip install -r requirements.txt`:
 
 ```bash
 pip install -r requirements.txt
-python run_local.py
-```
-
-Or run step-by-step:
-
-```bash
-pip install -r requirements.txt
 python train_all.py
 python analyze_results.py
 python random_demo.py
 python main.py --pygame
-python play.py --pygame
 ```
 
 - `train_all.py` trains all four algorithms (long run). Use individual scripts under `training/` if you want to train one family at a time.
-- `main.py --pygame` and `play.py --pygame` are equivalent entry points for playback with the Pygame window (requires trained models and summary JSON files under `models/`).
-- `run_local.py` is the single local entry point: training + analysis + videos + artifact collection under `outputs/`.
+- `main.py --pygame` runs the best saved agent in the Pygame window (requires trained models and summary JSON files under `models/`).
 
 ## GPU acceleration
 
@@ -112,17 +103,15 @@ If `torch.cuda.is_available()` is `False`, everything falls back to CPU.
 | Task | Command |
 |------|---------|
 | Install dependencies | `pip install -r requirements.txt` |
-| Run full local pipeline (single entry point) | `python run_local.py` |
 | Train all four algorithms (full sweep) | `python train_all.py` |
 | DQN only (10 configs) | `python training/dqn_training.py` |
 | PPO, A2C, and REINFORCE (10 configs each) | `python training/pg_training.py` |
 | REINFORCE only | `python training/reinforce_training.py` |
 | Random agent demo (PNG under `visualizations/`) | `python random_demo.py` |
+| Export trajectories for Unity replay | `python unity_export.py --algorithm ppo --episodes 3 --out outputs/unity/replay_trajectories.json` |
 | Play back best agent (from JSON summaries) | `python main.py` |
-| Same as `main.py` | `python play.py` |
 | Playback with Pygame window | `python main.py --pygame` |
 | Analysis / plots / report | `python analyze_results.py` |
-| Verify layout and Python syntax | `python verify_project.py` |
 | Generate architecture diagrams | `python -m environment.architecture_diagrams` |
 
 **Playback CLI highlights** (`main.py`): `--algorithm {all,dqn,reinforce,ppo,a2c}`, `--episodes N`, `--no-render`, `--pygame`.
@@ -139,6 +128,20 @@ Pinned in `requirements.txt`, including: `gymnasium`, `stable-baselines3`, `torc
 - **Summaries** — JSON files used by `main.py` and `analyze_results.py` (e.g. `models/dqn/dqn_summary.json`, `models/pg/ppo_summary.json`, `a2c_summary.json`, `reinforce_summary.json`).
 - **`analyze_results.py`** — figures under `visualizations/` and `TRAINING_REPORT.txt`.
 - **`architecture_diagrams`** — diagram images as produced by that module’s `main()`.
+- **`unity_export.py`** — replay trajectories under `outputs/unity/` for Unity visualization.
+
+## Unity integration (replay mode)
+
+You can keep Python for RL training and use Unity for polished visualization:
+
+1. Export replay data:
+   ```bash
+   python unity_export.py --algorithm ppo --episodes 3 --out outputs/unity/replay_trajectories.json
+   ```
+2. Open Unity and follow `unity_bridge/README.md`.
+3. Attach `unity_bridge/NutriVisionReplayController.cs` to a GameObject and replay episodes from `StreamingAssets/replay_trajectories.json`.
+
+The Unity bridge also includes an **interactive mode** where you press `1/2/3/4` for actions and run the environment loop directly inside Unity for live demos.
 
 ## Limitations and extensions
 
