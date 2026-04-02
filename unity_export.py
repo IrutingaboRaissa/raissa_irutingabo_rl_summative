@@ -11,13 +11,11 @@ import argparse
 import json
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
-import torch
 
 from environment.custom_env import NutriVisionEnv
-from training.reinforce_training import PolicyNetwork
 
 
 ACTION_NAMES = ["Accept", "Lower Calorie", "Higher Protein", "Skip"]
@@ -51,6 +49,9 @@ def _load_best_config(algorithm: str) -> Tuple[str, Dict[str, Any]]:
 
 
 def _load_policy(algorithm: str):
+    from training.reinforce_training import PolicyNetwork
+    import torch
+
     config_name, stats = _load_best_config(algorithm)
     if algorithm == "reinforce":
         hidden_size = int(stats["config"]["hidden_size"])
@@ -80,7 +81,10 @@ def _predict_action(model, algorithm: str, obs: np.ndarray) -> int:
 
 
 def _episode_to_json(
-    env: NutriVisionEnv, model, algorithm: str, episode_idx: int, seed: Optional[int]
+    env: NutriVisionEnv,
+    predict_action: Callable[[np.ndarray], int],
+    episode_idx: int,
+    seed: Optional[int],
 ) -> Dict[str, Any]:
     obs, _ = env.reset(seed=seed)
     trajectory: List[Dict[str, Any]] = []
@@ -91,7 +95,7 @@ def _episode_to_json(
 
     step_idx = 0
     while True:
-        action = _predict_action(model, algorithm, obs)
+        action = predict_action(obs)
         next_obs, reward, terminated, truncated, info = env.step(action)
         total_reward += float(reward)
 
@@ -152,15 +156,35 @@ def main() -> None:
         default=100,
         help="Base reset seed for deterministic exports (seed_base + episode_index)",
     )
+    parser.add_argument(
+        "--random-policy",
+        action="store_true",
+        help="Roll random actions (no SB3/REINFORCE checkpoints). For Unity replay demo only.",
+    )
     args = parser.parse_args()
 
-    os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
+    out_dir = os.path.dirname(args.out)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
 
-    model, best_config = _load_policy(args.algorithm)
     env = NutriVisionEnv()
     try:
+        if args.random_policy:
+            best_config = "random_demo"
+
+            def predict_action(obs: np.ndarray) -> int:
+                return int(env.action_space.sample())
+
+            algo_label = "random"
+        else:
+            model, best_config = _load_policy(args.algorithm)
+            algo_label = args.algorithm
+
+            def predict_action(obs: np.ndarray) -> int:
+                return _predict_action(model, args.algorithm, obs)
+
         episodes = [
-            _episode_to_json(env, model, args.algorithm, i, args.seed_base + i)
+            _episode_to_json(env, predict_action, i, args.seed_base + i)
             for i in range(args.episodes)
         ]
     finally:
@@ -170,7 +194,7 @@ def main() -> None:
         "schema_version": "1.0",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "project": "NutriVision Africa",
-        "algorithm": args.algorithm,
+        "algorithm": algo_label,
         "best_config": best_config,
         "action_names": ACTION_NAMES,
         "episodes": episodes,
@@ -180,7 +204,9 @@ def main() -> None:
         json.dump(payload, f, indent=2)
 
     print(f"[OK] Unity replay export saved: {args.out}")
-    print(f"[OK] Episodes: {len(episodes)} | Algorithm: {args.algorithm.upper()} | Best config: {best_config}")
+    print(
+        f"[OK] Episodes: {len(episodes)} | Policy: {algo_label.upper()} | Config: {best_config}"
+    )
 
 
 if __name__ == "__main__":

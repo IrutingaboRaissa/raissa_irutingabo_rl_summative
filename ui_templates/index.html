@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 NutriVision RL - Interactive Agent Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-panel {
+            grid-column: 1;
+        }
+
+        .visualization-panel {
+            grid-column: 2;
+            row-span: 2;
+        }
+
+        .logs-panel {
+            grid-column: 1;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status.running {
+            background: #e3f2fd;
+            color: #1976d2;
+            display: block;
+        }
+
+        .status.complete {
+            background: #e8f5e9;
+            color: #388e3c;
+            display: block;
+        }
+
+        .status.error {
+            background: #ffebee;
+            color: #d32f2f;
+            display: block;
+        }
+
+        /* Visualization */
+        .viz-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .step-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .step-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .step-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .step-info .action {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .step-info .reward {
+            background: #4caf50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        /* Progress bars */
+        .macronutrient {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .macro-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg, #ff9800, #ffc107);
+        }
+
+        .progress-fill.danger {
+            background: linear-gradient(90deg, #f44336, #e91e63);
+        }
+
+        /* Logs */
+        .logs-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .log-entry.action {
+            color: #ffff00;
+        }
+
+        .log-entry.reward {
+            color: #00ff00;
+        }
+
+        .log-entry.food {
+            color: #00d4ff;
+        }
+
+        /* Algorithm selector */
+        .algorithm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .algo-option {
+            padding: 10px;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .algo-option:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .algo-option input[type="radio"] {
+            display: none;
+        }
+
+        .algo-option input[type="radio"]:checked + label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .algo-option label {
+            cursor: pointer;
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .algo-reward {
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .visualization-panel {
+                grid-column: 1;
+                row-span: 1;
+            }
+
+            .logs-panel {
+                grid-column: 1;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 NutriVision RL Agent Viewer</h1>
+            <p>Watch trained agents make real-time meal recommendations</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Control Panel -->
+            <div class="panel control-panel">
+                <h2>⚙️ Configuration</h2>
+                
+                <div class="form-group">
+                    <label>Algorithm</label>
+                    <select id="algorithmSelect">
+                        <option value="a2c">A2C ⭐ (Best - 55.02 reward)</option>
+                        <option value="ppo">PPO (52.38 reward)</option>
+                        <option value="reinforce">REINFORCE (52.16 reward)</option>
+                        <option value="dqn">DQN (41.86 reward)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Goal Type</label>
+                    <select id="goalSelect">
+                        <option value="weight_loss">Weight Loss 📉</option>
+                        <option value="weight_gain">Weight Gain 📈</option>
+                        <option value="maintenance">Maintenance ⚖️</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Number of Steps (meals)</label>
+                    <input type="number" id="stepsInput" value="20" min="5" max="30">
+                </div>
+
+                <button id="runButton" onclick="runEpisode()">
+                    ▶️ Run Episode
+                </button>
+
+                <div id="status" class="status"></div>
+
+                <h2 style="margin-top: 30px;">📊 Episode Stats</h2>
+                <div id="statsContainer">
+                    <p>Run an episode to see statistics</p>
+                </div>
+            </div>
+
+            <!-- Visualization Panel -->
+            <div class="panel visualization-panel">
+                <h2>🎬 Real-Time Visualization</h2>
+                <div id="vizContainer" class="viz-container">
+                    <div style="text-align: center; color: #999; font-size: 1.2em;">
+                        👈 Click "Run Episode" to start
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Panel -->
+            <div class="panel logs-panel">
+                <h2>📝 Terminal Logs</h2>
+                <div id="logsContainer" class="logs-container">
+                    <div class="log-entry">Ready to run episode...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logsContainer = document.getElementById('logsContainer');
+        const vizContainer = document.getElementById('vizContainer');
+        const statusDiv = document.getElementById('status');
+        const runButton = document.getElementById('runButton');
+        const statsContainer = document.getElementById('statsContainer');
+
+        let currentStep = 0;
+        let totalReward = 0;
+
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsContainer.appendChild(entry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        function updateVisualization(data) {
+            if (data.type === 'episode_complete') {
+                vizContainer.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3>✅ Episode Complete!</h3>
+                        <p style="font-size: 1.5em; color: #4caf50; font-weight: 600;">
+                            Total Reward: ${data.total_reward.toFixed(2)}
+                        </p>
+                        <p>Steps completed: ${data.steps}</p>
+                        <p>Algorithm: ${data.algorithm.toUpperCase()}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            currentStep = data.step;
+            totalReward = data.cumulative_reward;
+
+            const obs = data.observation;
+            
+            // Calculate percentages
+            const calPercent = Math.min(100, (obs.calories / obs.cal_target) * 100);
+            const proteinPercent = Math.min(100, (obs.protein / obs.protein_target) * 100);
+            const carbsPercent = Math.min(100, (obs.carbs / obs.carbs_target) * 100);
+            const fatsPercent = Math.min(100, (obs.fats / obs.fats_target) * 100);
+
+            // Determine colors
+            function getColor(percent) {
+                if (percent <= 90) return '';
+                if (percent <= 110) return 'warning';
+                return 'danger';
+            }
+
+            vizContainer.innerHTML = `
+                <div>
+                    <div class="step-info">
+                        <h3>Step ${data.step}</h3>
+                        <p><strong>Food:</strong> ${data.food_name}</p>
+                        <p>
+                            <span class="action">${data.action}</span>
+                            <span class="reward">+${data.reward.toFixed(2)}</span>
+                        </p>
+                        <p><strong>Cumulative Reward:</strong> ${data.cumulative_reward.toFixed(2)}</p>
+                    </div>
+
+                    <div class="macronutrient">
+                        <div class="macro-label">
+                            <span>Calories</span>
+                            <span>${obs.calories.toFixed(0)} / ${obs.cal_target.toFixed(0)} kcal</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${getColor(calPercent)}" style="width: ${calPercent}%">
+                                ${calPercent.toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="macronutrient">
+                        <div class="macro-label">
+                            <span>Protein</span>
+                            <span>${obs.protein.toFixed(0)} / ${obs.protein_target.toFixed(0)}g</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${getColor(proteinPercent)}" style="width: ${proteinPercent}%">
+                                ${proteinPercent.toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="macronutrient">
+                        <div class="macro-label">
+                            <span>Carbohydrates</span>
+                            <span>${obs.carbs.toFixed(0)} / ${obs.carbs_target.toFixed(0)}g</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${getColor(carbsPercent)}" style="width: ${carbsPercent}%">
+                                ${carbsPercent.toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="macronutrient">
+                        <div class="macro-label">
+                            <span>Fats</span>
+                            <span>${obs.fats.toFixed(0)} / ${obs.fats_target.toFixed(0)}g</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${getColor(fatsPercent)}" style="width: ${fatsPercent}%">
+                                ${fatsPercent.toFixed(0)}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function runEpisode() {
+            const algorithm = document.getElementById('algorithmSelect').value;
+            const goal = document.getElementById('goalSelect').value;
+            const steps = document.getElementById('stepsInput').value;
+
+            runButton.disabled = true;
+            statusDiv.className = 'status running';
+            statusDiv.textContent = '🔄 Running episode...';
+            logsContainer.innerHTML = '';
+            currentStep = 0;
+            totalReward = 0;
+
+            addLog(`Starting episode with ${algorithm.toUpperCase()}...`, 'info');
+            addLog(`Goal: ${goal}`, 'info');
+            addLog(`Max steps: ${steps}`, 'info');
+
+            try {
+                const response = await fetch('/api/run-episode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        algorithm: algorithm,
+                        goal: goal,
+                        steps: parseInt(steps)
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (line.trim()) {
+                            const data = JSON.parse(line);
+                            
+                            if (data.type === 'episode_complete') {
+                                addLog(`✅ Episode complete! Final reward: ${data.total_reward.toFixed(2)}`, 'reward');
+                                updateVisualization(data);
+                                statusDiv.className = 'status complete';
+                                statusDiv.textContent = `✅ Episode complete! Reward: ${data.total_reward.toFixed(2)}`;
+                                
+                                statsContainer.innerHTML = `
+                                    <p><strong>Algorithm:</strong> ${data.algorithm.toUpperCase()}</p>
+                                    <p><strong>Final Reward:</strong> <span style="color: #4caf50; font-weight: 600;">${data.total_reward.toFixed(2)}</span></p>
+                                    <p><strong>Steps:</strong> ${data.steps}</p>
+                                    <p><strong>Goal:</strong> ${goal}</p>
+                                    <p><strong>Avg Reward/Step:</strong> ${(data.total_reward / data.steps).toFixed(2)}</p>
+                                `;
+                            } else {
+                                addLog(`Step ${data.step}: ${data.action} | Reward: +${data.reward.toFixed(2)} | Food: ${data.food_name}`, 'action');
+                                updateVisualization(data);
+                                
+                                // Add delay for visual effect
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+            } finally {
+                runButton.disabled = false;
+            }
+        }
+
+        // Initial log
+        addLog('NutriVision RL Agent Viewer started', 'info');
+        addLog('Ready to run episodes', 'info');
+    </script>
+</body>
+</html>

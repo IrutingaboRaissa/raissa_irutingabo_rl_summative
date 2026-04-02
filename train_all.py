@@ -1,8 +1,3 @@
-"""
-Master Training Script for NutriVision RL Agents
-Trains all 4 algorithms with full hyperparameter tuning
-"""
-
 import sys
 import time
 import json

@@ -76,8 +76,11 @@ tensorboard/
 models/*.zip
 models/*.pt
 
-# Visualizations
+# Visualizations / generated media
 visualizations/*.png
+*.mp4
+outputs/
+torch_wheel_check/
 
 # Reports
 TRAINING_REPORT.txt

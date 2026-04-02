@@ -294,20 +294,33 @@ class NutriVisionVisualizer:
         env: NutriVisionEnv,
         model,
         algorithm: str,
-        output_path: str = "visualizations/agent_demo.mp4",
+        output_path: str = "visualizations/agent_demo.avi",
         *,
         show_fps: bool = False,
         verbose: bool = True,
         max_frames: int | None = None,
     ):
-        """Record a single episode (using the trained model) into an MP4 file."""
+        """Record a single episode (using the trained model) into a video file.
+
+        Uses MJPG in an AVI container by default — plays reliably on Windows;
+        short MP4 files from OpenCV often fail in some players.
+        """
         import cv2
         
         obs, _ = env.reset()
         
-        # Video writer setup
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        # MJPG + AVI is the most portable combo with OpenCV on Windows.
+        path_lower = output_path.lower()
+        if path_lower.endswith(".mp4"):
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        else:
+            fourcc = cv2.VideoWriter_fourcc(*"MJPG")
         out = cv2.VideoWriter(output_path, fourcc, 30.0, (self.width, self.height))
+        if not out.isOpened():
+            raise RuntimeError(
+                f"Could not open VideoWriter for {output_path!r}. "
+                "Try .avi with MJPG or install a full OpenCV build."
+            )
         
         frame_count = 0
         

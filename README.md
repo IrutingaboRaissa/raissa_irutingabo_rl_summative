@@ -33,10 +33,13 @@ A Gymnasium environment and training pipeline for a food-recommendation agent al
 ├── models/
 │   ├── dqn/                    # DQN checkpoints + dqn_summary.json (or training_summary.json)
 │   └── pg/                     # PPO, A2C, REINFORCE checkpoints + *_summary.json
-├── main.py                     # Playback CLI (best model from summaries)
-├── random_demo.py              # Random policy + headless pygame screenshot demo
+├── main.py / play.py           # Playback CLI (best model from summaries); play.py is the thin entry
+├── random_demo.py              # Random policy + static visualization demo
+├── record_videos.py            # Record per-algorithm .avi demos under videos/<algo>/
 ├── unity_export.py             # Export trajectories for Unity replay
+├── prepare_unity_demo.ps1      # Windows: export JSON (optional copy to Unity project)
 ├── train_all.py                # Sequentially trains DQN, PPO, A2C, REINFORCE
+├── run_local.py                # Optional full pipeline + outputs/ collector
 ├── analyze_results.py          # Plots and TRAINING_REPORT.txt from summaries
 ├── unity_bridge/               # Unity replay script + integration notes
 ├── requirements.txt
@@ -73,20 +76,43 @@ pip install -r requirements.txt
 
 Replace `<your_github_username>` with your account. The suggested repository name for the summative is **`student_name_rl_summative`**.
 
-## Quick start (typical workflow)
+**Windows / Python 3.13.** If `import numpy` fails and your error mentions `python3.13t.exe`, the launcher is using the **free-threaded** build. Use the standard interpreter, e.g. `py -3.13` instead of `py`, or `Python313\python.exe` (see [NumPy troubleshooting](https://numpy.org/devdocs/user/troubleshooting-importerror.html)).
 
-Run from the project root **after** `pip install -r requirements.txt`:
+---
 
-```bash
-pip install -r requirements.txt
-python train_all.py
-python analyze_results.py
-python random_demo.py
-python main.py --pygame
-```
+## How to run the project (what and why)
 
-- `train_all.py` trains all four algorithms (long run). Use individual scripts under `training/` if you want to train one family at a time.
-- `main.py --pygame` runs the best saved agent in the Pygame window (requires trained models and summary JSON files under `models/`).
+Run everything from the **project root** after `pip install -r requirements.txt`. `play.py` is the same entry as `main.py` (thin wrapper).
+
+| What you want | Command | Why |
+|----------------|---------|-----|
+| **Install dependencies** | `pip install -r requirements.txt` | Gymnasium, SB3, PyTorch, Pygame, OpenCV, etc. |
+| **Train everything (long)** | `python train_all.py` | Runs all four algorithms and hyperparameter configs; writes **checkpoints** under `models/dqn/` and `models/pg/` plus **summary JSONs** used for playback and analysis. |
+| **Train one family only** | `python training/dqn_training.py` or `python training/pg_training.py` or `python training/reinforce_training.py` | Same idea as above but **DQN only**, **PPO+A2C+REINFORCE**, or **REINFORCE only** — faster iteration. |
+| **Plots, tables, written report** | `python analyze_results.py` | Reads summary JSONs → figures under `visualizations/`, `TRAINING_REPORT.txt`, comparison plots for the write-up. |
+| **Live demo: GUI + verbose terminal** | `python play.py --pygame` or `python main.py --pygame` | **Best policy** from summaries steps the env; **Pygame** shows the sim, **terminal** prints each step (food, action, reward, macros). Use for **markers** or **screen-recorded video demos**. Add `--episodes N`, `--algorithm ppo` (etc.). |
+| **Playback, terminal only** | `python play.py` | Same agent, **no Pygame**; prints step logs. Use `--no-render` to silence terminal. |
+| **Random policy screenshot** | `python random_demo.py` | Quick **baseline** visualization (PNG under `visualizations/`); no trained weights. |
+| **Save demo videos per algorithm** | `python record_videos.py --headless --steps 400` | Writes **`.avi` (MJPEG)** under `videos/dqn/`, `videos/ppo/`, etc., with **labeled filenames** (algorithm + best config + step cap). Needs **trained checkpoints**. Add `--algorithm ppo` for one algo, `--timestamp` to avoid overwrites, `--verbose` for step prints. |
+| **Full pipeline in one go** | `python run_local.py` | **Train → analyze → random demo PNG → copy artifacts to `outputs/`**. Add `--skip-training` if models already exist; add `--with-videos --headless` to also run `record_videos.py` into `videos/`. |
+| **Unity replay JSON** | `python unity_export.py --algorithm ppo --episodes 3` | Exports trajectories for **Unity**; needs checkpoints. Use `--random-policy` for JSON **without** weights (smoke test). |
+| **Architecture diagrams** | `python -m environment.architecture_diagrams` | Generates pipeline / system figures if you need them for documentation. |
+
+### Typical flows
+
+**A — From scratch (reproduce full project)**  
+`pip install -r requirements.txt` → `python train_all.py` → `python analyze_results.py` → `python play.py --pygame` (or `record_videos.py` for files to submit).
+
+**B — You already have `models/` checkpoints + summaries**  
+`python analyze_results.py` (if you need fresh plots) → `python play.py --pygame` for live demo, or `python record_videos.py --headless` for saved videos.
+
+**C — Automated packaging**  
+`python run_local.py` (optionally `--skip-training`, `--with-videos --headless`). Collects models, visualizations, tables, and videos into `outputs/`.
+
+### Playback details
+
+- **Flags** (`main.py` / `play.py`): `--algorithm {all,dqn,reinforce,ppo,a2c}`, `--episodes N`, `--no-render`, `--pygame`.
+- **Checkpoints:** SB3 loads `models/dqn/dqn_<config>` or `models/pg/{ppo,a2c}_<config>` (`.zip` if present). REINFORCE: `models/pg/reinforce_<config>.pt`. The **best** config per algorithm is the one with **highest mean reward** in that algorithm’s summary JSON.
 
 ## GPU acceleration
 
@@ -98,26 +124,6 @@ Training uses **PyTorch** and **Stable-Baselines3**. If a **CUDA** GPU is availa
 
 If `torch.cuda.is_available()` is `False`, everything falls back to CPU.
 
-## Commands
-
-| Task | Command |
-|------|---------|
-| Install dependencies | `pip install -r requirements.txt` |
-| Train all four algorithms (full sweep) | `python train_all.py` |
-| DQN only (10 configs) | `python training/dqn_training.py` |
-| PPO, A2C, and REINFORCE (10 configs each) | `python training/pg_training.py` |
-| REINFORCE only | `python training/reinforce_training.py` |
-| Random agent demo (PNG under `visualizations/`) | `python random_demo.py` |
-| Export trajectories for Unity replay | `python unity_export.py --algorithm ppo --episodes 3 --out outputs/unity/replay_trajectories.json` |
-| Play back best agent (from JSON summaries) | `python main.py` |
-| Playback with Pygame window | `python main.py --pygame` |
-| Analysis / plots / report | `python analyze_results.py` |
-| Generate architecture diagrams | `python -m environment.architecture_diagrams` |
-
-**Playback CLI highlights** (`main.py`): `--algorithm {all,dqn,reinforce,ppo,a2c}`, `--episodes N`, `--no-render`, `--pygame`.
-
-**Model paths.** SB3 models load from `models/dqn/` or `models/pg/` with names like `dqn_<config>`, `ppo_<config>`, `a2c_<config>`. REINFORCE weights are `models/pg/reinforce_<config>.pt`.
-
 ## Dependencies
 
 Pinned in `requirements.txt`, including: `gymnasium`, `stable-baselines3`, `torch`, `numpy`, `matplotlib`, `tensorboard`, `pygame`, `opencv-python`, `pillow`.
@@ -127,21 +133,41 @@ Pinned in `requirements.txt`, including: `gymnasium`, `stable-baselines3`, `torc
 - **Checkpoints** under `models/dqn/` and `models/pg/`.
 - **Summaries** — JSON files used by `main.py` and `analyze_results.py` (e.g. `models/dqn/dqn_summary.json`, `models/pg/ppo_summary.json`, `a2c_summary.json`, `reinforce_summary.json`).
 - **`analyze_results.py`** — figures under `visualizations/` and `TRAINING_REPORT.txt`.
+- **`record_videos.py`** — labeled **`.avi`** files under **`videos/<algorithm>/`** (see table above).
 - **`architecture_diagrams`** — diagram images as produced by that module’s `main()`.
-- **`unity_export.py`** — replay trajectories under `outputs/unity/` for Unity visualization.
+- **`unity_export.py`** — replay JSON (default `outputs/unity/` or path you pass) for Unity visualization.
 
 ## Unity integration (replay mode)
 
 You can keep Python for RL training and use Unity for polished visualization:
 
-1. Export replay data:
+1. Export replay data (trained policy — needs checkpoints under `models/`):
    ```bash
    python unity_export.py --algorithm ppo --episodes 3 --out outputs/unity/replay_trajectories.json
    ```
-2. Open Unity and follow `unity_bridge/README.md`.
-3. Attach `unity_bridge/NutriVisionReplayController.cs` to a GameObject and replay episodes from `StreamingAssets/replay_trajectories.json`.
+   If you only need a **Unity replay smoke test** and have no `.zip` / `.pt` weights yet:
+   ```bash
+   python unity_export.py --random-policy --episodes 3 --out outputs/unity/replay_trajectories.json
+   ```
+   On Windows you can also run `.\prepare_unity_demo.ps1` (default: random policy, uses `py -3.13`). Use `-Trained` after you have checkpoints; add `-UnityProjectPath "C:\path\to\YourUnityProject"` to copy JSON into `Assets/StreamingAssets/`.
+2. Install **Unity Hub** + an LTS Editor, create a **3D (URP)** project, import **TextMeshPro** when prompted.
+3. Follow `unity_bridge/README.md`: copy the two `.cs` scripts into `Assets/Scripts/`, put `replay_trajectories.json` in `Assets/StreamingAssets/`, attach `NutriVisionReplayController` to a GameObject, press **Play**.
 
-The Unity bridge also includes an **interactive mode** where you press `1/2/3/4` for actions and run the environment loop directly inside Unity for live demos.
+The Unity bridge also includes an **interactive mode** (inspector: `Run Mode` → `InteractiveUnityEnv`) where you press `1/2/3/4` for actions with **no JSON file** — useful if you only want a live demo inside Unity.
+
+## Rubric checklist (how to hit the marks)
+
+**Environment validity** — `environment/custom_env.py` defines a 15-D observation, 4 discrete actions (accept / lower-cal / higher protein / skip), goal-dependent targets (loss / gain / maintenance), rewards tied to macro alignment and small penalties for alternatives, termination at `max_steps` or extreme over-intake. For the write-up, explicitly map each action to state changes and name edge cases (skip, alternatives, target blowout).
+
+**Hyperparameter tables** — After training, run `python analyze_results.py`. It writes four PNG tables under `visualizations/` (`dqn_results_table.png`, `ppo_results_table.png`, `a2c_results_table.png`, `reinforce_results_table.png`) with **10 rows** and distinct hyperparameter columns. In your report, interpret **lr, gamma, batch/n_steps, exploration (DQN), entropy/clip (PPO)** with reference to stability vs convergence.
+
+**Visualization / agent behavior** — Run `python main.py --pygame` or `python play.py --pygame` so the marker sees **Pygame GUI + terminal** together. `environment/api_module.py` is your hook for “JSON / frontend” narrative (serialize state + recommendation).
+
+**Discussion graphs** — You already get hp bar charts, algorithm comparison, generalization plot, and tables from `analyze_results.py`. The rubric also names **cumulative reward curves, DQN loss/objective curves, PG entropy curves, convergence plots**: those need **training-time logs** (e.g. SB3 `TensorboardCallback` or CSV from callbacks). Easiest path: add TensorBoard logging per algorithm, train once, screenshot the relevant scalars for the report.
+
+**Video demo (5 pts)** — Record **full screen**, **camera on you**, state the **problem, objective, reward rules**, show **simulation (Pygame) + verbose terminal** side by side, and narrate **what the agent does each step**. Prefer a **longer run** so the file is not trivial:
+`python record_videos.py --headless --verbose --steps 400`  
+Outputs are **`.avi` (MJPEG)** under **`videos/dqn/`**, **`videos/ppo/`**, **`videos/a2c/`**, **`videos/reinforce/`**, with filenames like `NutriVision_DQN_best_large_buffer_max400steps.avi`. Add `--timestamp` to avoid overwrites. Use **VLC** if the default player fails; re-encode with Clipchamp / OBS if your LMS requires MP4.
 
 ## Limitations and extensions
 
@@ -149,13 +175,6 @@ The Unity bridge also includes an **interactive mode** where you press `1/2/3/4`
 - Suitable for coursework / experimentation rather than clinical deployment.
 - Natural extensions: larger menu, real nutrition APIs, user profiles, or replacing the CNN tail with a trained image encoder.
 
-## Author
-
-**Raissa IRUTINGABO**
-
-Course: Pre-Capstone — Machine Learning Specialization  
-
-Program: Bachelor of Science in Software Engineering
 
 ## License
 
