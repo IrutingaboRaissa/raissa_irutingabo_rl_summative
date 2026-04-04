@@ -84,6 +84,3 @@ torch_wheel_check/
 
 # Reports
 TRAINING_REPORT.txt
-
-# Unity replay exports
-outputs/unity/

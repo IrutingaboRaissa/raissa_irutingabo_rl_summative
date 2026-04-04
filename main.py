@@ -129,7 +129,9 @@ def play_episode(
         if pygame_viz is not None:
             import pygame
 
-            pygame_viz.render_episode(env, action, reward)
+            pygame_viz.render_episode(
+                env, action, reward, episode_done=terminated or truncated
+            )
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminated = True
