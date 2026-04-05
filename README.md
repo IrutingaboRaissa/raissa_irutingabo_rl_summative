@@ -106,16 +106,79 @@ python -m pip install -r requirements.txt
 | `numpy`, `pillow`, `tensorboard` | Arrays, images, optional TB logging |
 
 
-## Project layout (short)
+## Project structure
+
+Overview of the repository (paths are relative to the project root). Files produced by training or scripts are listed under **Generated folders**.
 
 ```
-environment/   custom_env.py, pygame_viz.py, rendering.py, meal_cnn.py, api_module.py, architecture_diagrams.py
-training/      dqn_training.py, pg_training.py, reinforce_training.py
-models/dqn/    summary JSONs + DQN .zip (after training; .zip gitignored by default)
-models/pg/     summary JSONs + PPO, A2C, REINFORCE files (after training)
-main.py, play.py          same playback CLI
-train_all.py, analyze_results.py, record_videos.py, random_demo.py, game_watch_demo.py, run_local.py
+raissa_irutingabo_rl_summative/
+├── README.md                 # This file
+├── requirements.txt          # Pip dependencies
+├── .gitignore
+├── play.py                   # Entry point → delegates to main.py (same CLI as main.py)
+├── main.py                   # Load best checkpoint from summaries; run episodes; optional Pygame
+├── train_all.py              # Runs DQN + PG + REINFORCE training pipelines
+├── analyze_results.py        # Aggregates summary JSONs → plots, tables, TRAINING_REPORT.txt
+├── record_videos.py          # Records AVI demos from trained agents (OpenCV)
+├── random_demo.py            # Random policy → static PNG (no trained weights)
+├── game_watch_demo.py        # Pygame window + random actions (no trained weights)
+├── run_local.py              # Full pipeline (train → analyze → optional extras)
+├── environment/              # Gym env, UI, helpers (see below)
+├── training/                 # Per-algorithm training scripts (see below)
+├── models/                   # Training metrics JSONs; checkpoints after local train (see below)
+└── ui_templates/             # Optional static HTML viewer (not required to run RL code)
 ```
+
+### `environment/` — core RL environment and visualization
+
+| File | Purpose |
+|------|---------|
+| `custom_env.py` | **`NutriVisionEnv`**: Gymnasium env (observation, actions, reward, termination), food DB, goals. |
+| `pygame_viz.py` | **`NutriVisionVisualizer`**: live Pygame dashboard (client, macros, meal, rewards, transitions). |
+| `rendering.py` | **`EnvironmentVisualizer`**: Matplotlib / terminal-style plots used by `main.py` and demos. |
+| `meal_cnn.py` | Small CNN used to enrich observations with meal-related features (optional tail in obs). |
+| `api_module.py` | Builds JSON-friendly state/recommendation payloads (report / API sketch; not required to train). |
+| `architecture_diagrams.py` | Runnable module to emit architecture figures for documentation. |
+| `__init__.py` | Package marker. |
+
+### `training/` — training loops
+
+| File | Purpose |
+|------|---------|
+| `dqn_training.py` | Trains **DQN** variants; writes `models/dqn/*.zip` + updates DQN summary JSON. |
+| `pg_training.py` | Trains **PPO** and **A2C**; writes `models/pg/*.zip` + PG summary JSONs. |
+| `reinforce_training.py` | Custom **REINFORCE** loop + `PolicyNetwork`; writes `models/pg/reinforce_*.pt` + summary. |
+| `__init__.py` | Package marker. |
+
+### `models/` — metrics and checkpoints
+
+| Path | Purpose |
+|------|---------|
+| `models/dqn/dqn_summary.json` (or `training_summary.json`) | Per-config mean rewards for DQN; used to pick **best** DQN run. |
+| `models/pg/ppo_summary.json` | Same for PPO. |
+| `models/pg/a2c_summary.json` | Same for A2C. |
+| `models/pg/reinforce_summary.json` | Same for REINFORCE. |
+| `models/master_training_results.json` | Optional aggregate of runs (if present). |
+| `models/dqn/*.zip`, `models/pg/*.zip` | **SB3 checkpoints** — created by training; often **not** committed (see `.gitignore`). |
+| `models/pg/reinforce_*.pt` | **PyTorch** REINFORCE weights — created by training; often **not** committed. |
+
+`play.py` reads the summary JSONs to choose the best config, then loads the matching **`.zip` / `.pt`** from disk. Without those binaries, use `game_watch_demo.py` / `random_demo.py` or train first.
+
+### `ui_templates/`
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Standalone **browser UI** mockup for showcasing agent ideas; **optional** — does not replace Python/Pygame training or playback. |
+
+### Generated folders (after running scripts; may be empty or gitignored)
+
+| Path | What creates it | Contents |
+|------|-----------------|----------|
+| `visualizations/` | `random_demo.py`, `analyze_results.py`, `main.py` (static viz), etc. | PNG plots, tables, demos. |
+| `videos/` | `record_videos.py` | Per-algorithm `.avi` recordings. |
+| `outputs/` | `run_local.py` or custom exports | Pipeline outputs (repo-wide `outputs/` often ignored). |
+| `runs/`, `logs/` | TensorBoard (if used) | Event logs. |
+| `TRAINING_REPORT.txt` | `analyze_results.py` | Text summary for the report. |
 
 ## Outputs
 

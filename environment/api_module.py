@@ -222,7 +222,6 @@ class NutriVisionAPI:
             "model_info": self.get_model_info(),
         }, indent=2)
 
-
 class NutriVisionEndpoints:
     """REST API endpoint handlers."""
     
@@ -296,7 +295,6 @@ if __name__ == '__main__':
     app.run(debug=True, port=5000)
 """
 
-
 def demo_api():
     """Demonstrate API usage without a trained model."""
     print("\n" + "="*80)
@@ -331,7 +329,6 @@ def demo_api():
         "day_progress": 0.5,
         "num_meals_logged": 3
     }
-    
     # Get recommendation
     print("User State:")
     print(json.dumps(user_state, indent=2))
@@ -352,7 +349,6 @@ def demo_api():
     # Export
     api.export_session_json("visualizations/api_demo_session.json")
     print("\n[OK] Session exported to visualizations/api_demo_session.json")
-
 
 if __name__ == "__main__":
     demo_api()
